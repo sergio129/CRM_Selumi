@@ -1,49 +1,87 @@
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { CacheProvider } from '@emotion/react';
 import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { theme } from '../theme';
+import { Box, CssBaseline, CircularProgress } from '@mui/material';
 import { AuthProvider } from '../contexts/AuthContext';
 import Sidebar from '../components/Sidebar';
-import { useRouter } from 'next/router';
+import createEmotionCache from '../utils/createEmotionCache';
 import type { AppProps } from 'next/app';
+import setupAxiosInterceptors from '../utils/axiosInterceptor';
+import Head from 'next/head';
+import theme from '../theme';
 
-function MyApp({ Component, pageProps }: AppProps) {
+// Client-side cache, shared for the whole session of the user in the browser.
+const clientSideEmotionCache = createEmotionCache();
+
+function MyApp({ Component, pageProps, emotionCache = clientSideEmotionCache }: AppProps) {
   const router = useRouter();
-  const noSidebarRoutes = ['/login', '/register'];
-  const showSidebar = !noSidebarRoutes.includes(router.pathname);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (typeof window === 'undefined') {
-    return null; // Return null during SSR
-  }
+  useEffect(() => {
+    setupAxiosInterceptors();
+  }, []);
+
+  useEffect(() => {
+    const handleStart = () => setIsLoading(true);
+    const handleComplete = () => setIsLoading(false);
+
+    router.events.on('routeChangeStart', handleStart);
+    router.events.on('routeChangeComplete', handleComplete);
+    router.events.on('routeChangeError', handleComplete);
+
+    return () => {
+      router.events.off('routeChangeStart', handleStart);
+      router.events.off('routeChangeComplete', handleComplete);
+      router.events.off('routeChangeError', handleComplete);
+    };
+  }, [router]);
+
+  const publicRoutes = ['/login', '/register'];
+
+  useEffect(() => {
+    // Verificar autenticación
+    const token = localStorage.getItem('token');
+    if (!token && !publicRoutes.includes(router.pathname)) {
+      router.push('/login');
+    }
+  }, [router.pathname]);
+
+  const showSidebar = !publicRoutes.includes(router.pathname);
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AuthProvider>
-        <div style={{ display: 'flex', minHeight: '100vh' }}>
-          {showSidebar && <Sidebar />}
-          <main style={{ 
-            flexGrow: 1, 
-            padding: '20px',
-            marginLeft: showSidebar ? '240px' : '0',
-            transition: 'margin 225ms cubic-bezier(0, 0, 0.2, 1) 0ms'
-          }}>
-            <Component {...pageProps} />
-          </main>
-        </div>
-      </AuthProvider>
-    </ThemeProvider>
+    <CacheProvider value={emotionCache}>
+      <Head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </Head>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AuthProvider>
+          <Box sx={{ display: 'flex' }}>
+            {showSidebar && <Sidebar />}
+            <Box
+              component="main"
+              sx={{
+                flexGrow: 1,
+                p: 3,
+                mt: '64px',
+                ml: showSidebar ? { sm: '240px' } : 0,
+                transition: 'margin 0.2s'
+              }}
+            >
+              {isLoading ? (
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <Component {...pageProps} />
+              )}
+            </Box>
+          </Box>
+        </AuthProvider>
+      </ThemeProvider>
+    </CacheProvider>
   );
 }
-
-// Add this to disable automatic static optimization
-MyApp.getInitialProps = async ({ Component, ctx }) => {
-  let pageProps = {};
-
-  if (Component.getInitialProps) {
-    pageProps = await Component.getInitialProps(ctx);
-  }
-
-  return { pageProps };
-};
 
 export default MyApp;

@@ -1,8 +1,13 @@
-import { Controller, Post, Get, Body, Param, Query, UseGuards, Delete, Put, HttpException, HttpStatus, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Query, UseGuards, Delete, Put, HttpException, HttpStatus, ParseIntPipe, Patch } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PayrollService } from './payroll.service';
 import { GeneratePayrollDto } from './dtos/generate-payroll.dto';
 import { Employee } from './employee.entity';
+import { PayrollStatus } from './types';
+
+interface UpdateStatusDto {
+  status: PayrollStatus;
+}
 
 @Controller('payroll')
 @UseGuards(JwtAuthGuard)
@@ -11,49 +16,58 @@ export class PayrollController {
 
   @Post('generate')
   async generatePayroll(@Body() generatePayrollDto: GeneratePayrollDto) {
-    return this.payrollService.generatePayroll(
-      generatePayrollDto.employeeId,
-      {
-        start: new Date(generatePayrollDto.periodStart),
-        end: new Date(generatePayrollDto.periodEnd)
-      }
-    );
+    try {
+      console.log('Recibiendo datos para generar nómina:', generatePayrollDto); // Debug log
+      
+      const result = await this.payrollService.generatePayroll(generatePayrollDto);
+
+      return {
+        success: true,
+        data: result,
+        message: 'Nómina generada exitosamente'
+      };
+    } catch (error) {
+      console.error('Error al generar nómina:', error); // Debug log
+      throw new HttpException({
+        success: false,
+        message: error.message || 'Error al generar nómina',
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Get()
   async findAll() {
     try {
-      const employees = await this.payrollService.findAll();
+      const payrolls = await this.payrollService.findAll();
       return {
         success: true,
-        data: employees,
-        message: 'Empleados recuperados exitosamente'
+        data: payrolls
       };
     } catch (error) {
-      throw new HttpException({
+      console.error('Error en findAll:', error);
+      return {
         success: false,
-        message: 'Error al recuperar empleados',
+        message: 'Error al obtener nóminas',
         error: error.message
-      }, HttpStatus.INTERNAL_SERVER_ERROR);
+      };
     }
   }
 
   @Get('employees')
   async findAllEmployees() {
     try {
-      const employees = await this.payrollService.findAll();
+      const employees = await this.payrollService.findAllEmployees();
       return {
         success: true,
-        data: employees || [],
-        message: 'Empleados recuperados exitosamente'
+        data: employees
       };
     } catch (error) {
-      console.error('Error in findAllEmployees:', error);
-      throw new HttpException({
+      console.error('Error en findAllEmployees:', error);
+      return {
         success: false,
-        message: 'Error al recuperar empleados',
+        message: 'Error al obtener empleados',
         error: error.message
-      }, HttpStatus.INTERNAL_SERVER_ERROR);
+      };
     }
   }
 
@@ -87,5 +101,26 @@ export class PayrollController {
   @Put(':id')
   async update(@Param('id') id: string, @Body() employee: Employee): Promise<void> {
     return this.payrollService.update(+id, employee);
+  }
+
+  @Patch(':id/status')
+  async updateStatus(
+    @Param('id') id: string, 
+    @Body('status') status: PayrollStatus
+  ) {
+    try {
+      const result = await this.payrollService.updateStatus(parseInt(id), status);
+      return {
+        success: true,
+        data: result
+      };
+    } catch (error) {
+      console.error('Error en updateStatus:', error);
+      return {
+        success: false,
+        message: 'Error al actualizar estado',
+        error: error.message
+      };
+    }
   }
 }

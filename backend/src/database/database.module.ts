@@ -7,6 +7,7 @@ import { Loan } from '../loans/loan.entity';
 import { Employee } from '../payroll/employee.entity';
 import { Role } from '../roles/role.entity';
 import { Attendance } from '../attendance/attendance.entity';
+import { Payroll } from '../payroll/payroll.entity'; // Agregar esta línea
 
 @Module({
   imports: [
@@ -17,8 +18,8 @@ import { Attendance } from '../attendance/attendance.entity';
       username: 'root',
       password: 'Sheyo_0129',
       database: 'crm',
-      entities: [User, Client, Transaction, Loan, Employee, Role, Attendance],
-      synchronize: true, // Cambiado a true temporalmente para debug
+      entities: [User, Client, Transaction, Loan, Employee, Role, Attendance, Payroll], // Agregar Payroll aquí
+      synchronize: true,
       logging: true,
     }),
   ],

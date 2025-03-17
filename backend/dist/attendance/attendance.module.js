@@ -17,9 +17,12 @@ let AttendanceModule = class AttendanceModule {
 exports.AttendanceModule = AttendanceModule;
 exports.AttendanceModule = AttendanceModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([attendance_entity_1.Attendance])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([attendance_entity_1.Attendance])
+        ],
         providers: [attendance_service_1.AttendanceService],
         controllers: [attendance_controller_1.AttendanceController],
+        exports: [attendance_service_1.AttendanceService, typeorm_1.TypeOrmModule]
     })
 ], AttendanceModule);
 //# sourceMappingURL=attendance.module.js.map

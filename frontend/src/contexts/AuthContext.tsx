@@ -1,5 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import axios from 'axios';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/router';
 
 interface AuthContextType {
@@ -14,39 +13,47 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [router.pathname]);
 
   const checkAuth = async () => {
     try {
-      setIsLoading(true);
       const token = localStorage.getItem('token');
       const savedUser = localStorage.getItem('user');
 
       if (!token || !savedUser) {
+        setUser(null);
         if (!router.pathname.includes('/login')) {
-          router.push('/login');
+          router.replace('/login');
         }
         return;
       }
 
+      // Validar token y usuario
       setUser(JSON.parse(savedUser));
     } catch (error) {
-      console.error('Auth check error:', error);
+      console.error('Error en checkAuth:', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
+      router.replace('/login');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const login = (userData: any) => {
-    setUser(userData.user);  // Cambiado para manejar la estructura correcta de la respuesta
-    if (typeof window !== 'undefined') {
+    console.log('Login data:', userData); // Debug log
+    if (userData.user && userData.access_token) {
+      setUser(userData.user);
       localStorage.setItem('user', JSON.stringify(userData.user));
       localStorage.setItem('token', userData.access_token);
+    } else {
+      console.error('Datos de usuario inválidos:', userData);
     }
   };
 
@@ -56,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       window.localStorage.removeItem('user');
       window.localStorage.removeItem('token');
     }
+    router.replace('/login');
   };
 
   return (
@@ -65,10 +73,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login, 
         logout, 
         isAuthenticated: !!user,
-        isLoading 
+        isLoading: loading 
       }}
     >
-      {!isLoading && children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

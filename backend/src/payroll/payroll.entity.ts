@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 import { Employee } from './employee.entity';
 
 @Entity()
@@ -6,7 +6,8 @@ export class Payroll {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Employee)
+  @ManyToOne(() => Employee, { eager: true })
+  @JoinColumn({ name: 'employeeId' })
   employee: Employee;
 
   @Column()
@@ -49,12 +50,73 @@ export class Payroll {
   @Column({ type: 'text', nullable: true })
   notes: string;
 
-  @Column({ default: 'pending' })
-  status: string;
+  @Column({ 
+    type: 'enum', 
+    enum: ['pendiente', 'aprobado', 'pagado', 'cancelado'], 
+    default: 'pendiente'
+  })
+  status: 'pendiente' | 'aprobado' | 'pagado' | 'cancelado';
 
   @CreateDateColumn()
   createdAt: Date;
 
   @Column({ nullable: true })
   paidAt: Date;
+
+  @Column({ type: 'json', nullable: true })
+  attendanceDetails: {
+    daysWorked: number;
+    absences: number;
+    holidays: number;
+    vacationDays: number;
+    sickDays: number;
+  };
+
+  @Column({ type: 'json', nullable: true })
+  overtimeDetails: {
+    regularOvertimeHours: number;
+    holidayOvertimeHours: number;
+    nightOvertimeHours: number;
+    totalOvertimeAmount: number;
+  };
+
+  @Column({ type: 'json', nullable: true })
+  incentives: {
+    performance: number;
+    attendance: number;
+    leadership: number;
+    other: number;
+  };
+
+  @Column({ type: 'json', nullable: true })
+  taxDetails: {
+    taxableIncome: number;
+    taxRate: number;
+    taxExemptions: number;
+    finalTax: number;
+  };
+
+  @Column({ nullable: true })
+  approvedBy: string;
+
+  @Column({ nullable: true })
+  approvedAt: Date;
+
+  @Column({ default: false })
+  isPaid: boolean;
+
+  @Column({ nullable: true })
+  paymentReference: string;
+
+  @Column({ nullable: true })
+  paymentMethod: string;
+
+  @Column({ type: 'json', nullable: true })
+  adjustments: {
+    description: string;
+    amount: number;
+    type: 'addition' | 'deduction';
+    date: Date;
+    approvedBy: string;
+  }[];
 }

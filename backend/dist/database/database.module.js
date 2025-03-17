@@ -16,6 +16,7 @@ const loan_entity_1 = require("../loans/loan.entity");
 const employee_entity_1 = require("../payroll/employee.entity");
 const role_entity_1 = require("../roles/role.entity");
 const attendance_entity_1 = require("../attendance/attendance.entity");
+const payroll_entity_1 = require("../payroll/payroll.entity");
 let DatabaseModule = class DatabaseModule {
 };
 exports.DatabaseModule = DatabaseModule;
@@ -29,7 +30,7 @@ exports.DatabaseModule = DatabaseModule = __decorate([
                 username: 'root',
                 password: 'Sheyo_0129',
                 database: 'crm',
-                entities: [user_entity_1.User, client_entity_1.Client, transaction_entity_1.Transaction, loan_entity_1.Loan, employee_entity_1.Employee, role_entity_1.Role, attendance_entity_1.Attendance],
+                entities: [user_entity_1.User, client_entity_1.Client, transaction_entity_1.Transaction, loan_entity_1.Loan, employee_entity_1.Employee, role_entity_1.Role, attendance_entity_1.Attendance, payroll_entity_1.Payroll],
                 synchronize: true,
                 logging: true,
             }),

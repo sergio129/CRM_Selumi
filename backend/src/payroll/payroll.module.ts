@@ -7,9 +7,14 @@ import { Payroll } from './payroll.entity';
 import { PayrollCalculatorService } from './payroll-calculator.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Employee, Payroll])],
-  providers: [PayrollService, PayrollCalculatorService],
+  imports: [
+    TypeOrmModule.forFeature([Employee, Payroll])
+  ],
+  providers: [
+    PayrollService,
+    PayrollCalculatorService
+  ],
   controllers: [PayrollController],
-  exports: [PayrollService],
+  exports: [PayrollService]
 })
 export class PayrollModule {}

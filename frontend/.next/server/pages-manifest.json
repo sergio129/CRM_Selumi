@@ -2,7 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+  "/login": "pages/login.js",
+  "/home": "pages/home.js",
   "/employees": "pages/employees.js",
-  "/users": "pages/users.js",
-  "/employees/edit/[id]": "pages/employees/edit/[id].js"
+  "/payroll": "pages/payroll.js"
 }

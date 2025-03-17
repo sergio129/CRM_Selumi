@@ -1,16 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { json } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+  // Configuración CORS más permisiva para desarrollo
   app.enableCors({
     origin: 'http://localhost:3000',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
-  // Aumentar el límite de tamaño del payload
-  app.use(json({ limit: '50mb' }));
+
   await app.listen(3001);
 }
 bootstrap();

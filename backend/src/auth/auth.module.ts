@@ -6,18 +6,24 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './jwt.strategy';
 import { MfaService } from './mfa.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'secretKey',
-      signOptions: { expiresIn: '60m' },
+      secret: 'tu-secreto-seguro', // En producción, usar variables de entorno
+      signOptions: { expiresIn: '24h' },
     }),
   ],
-  providers: [AuthService, JwtStrategy, MfaService],
+  providers: [
+    AuthService, 
+    JwtStrategy, 
+    MfaService,
+    JwtAuthGuard  // Agregar JwtAuthGuard a los providers
+  ],
   controllers: [AuthController],
-  exports: [AuthService, MfaService],
+  exports: [AuthService, MfaService, JwtAuthGuard],
 })
 export class AuthModule {}

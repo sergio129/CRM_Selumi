@@ -87,6 +87,9 @@ export class Employee {
   @Column({ type: 'date', nullable: true })
   lastPaymentDate: Date;
 
+  @Column({ default: false })
+  isIncomeTaxPayer: boolean; // Indica si el empleado es declarante de renta
+
   @CreateDateColumn()
   createdAt: Date;
 

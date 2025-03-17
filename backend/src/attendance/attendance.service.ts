@@ -7,7 +7,7 @@ import { Attendance } from './attendance.entity';
 export class AttendanceService {
   constructor(
     @InjectRepository(Attendance)
-    private attendanceRepository: Repository<Attendance>,
+    private readonly attendanceRepository: Repository<Attendance>
   ) {}
 
   findAll(): Promise<Attendance[]> {

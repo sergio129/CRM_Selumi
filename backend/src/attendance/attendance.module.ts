@@ -5,8 +5,11 @@ import { AttendanceController } from './attendance.controller';
 import { Attendance } from './attendance.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Attendance])],
+  imports: [
+    TypeOrmModule.forFeature([Attendance])
+  ],
   providers: [AttendanceService],
   controllers: [AttendanceController],
+  exports: [AttendanceService, TypeOrmModule]
 })
 export class AttendanceModule {}

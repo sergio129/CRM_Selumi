@@ -26,9 +26,9 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            auth_module_1.AuthModule,
             database_module_1.DatabaseModule,
             users_module_1.UsersModule,
-            auth_module_1.AuthModule,
             clients_module_1.ClientsModule,
             accounting_module_1.AccountingModule,
             loans_module_1.LoansModule,
@@ -39,6 +39,8 @@ exports.AppModule = AppModule = __decorate([
             notifications_module_1.NotificationsModule,
             attendance_module_1.AttendanceModule,
         ],
+        controllers: [],
+        providers: [],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

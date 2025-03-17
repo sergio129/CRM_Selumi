@@ -1,38 +1,52 @@
-import { Container, Typography, Box } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { Container, Typography, Box, CircularProgress } from '@mui/material';
 
 const Home = () => {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, router]);
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
 
-  if (!isAuthenticated) {
-    return null;
+    if (!token || !userData) {
+      router.replace('/login');
+      return;
+    }
+
+    try {
+      setUser(JSON.parse(userData));
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      router.replace('/login');
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <CircularProgress />
+      </Box>
+    );
   }
 
+  if (!user) return null;
+
   return (
-    <Box sx={{ padding: '2rem' }}>
-      <Container maxWidth="lg">
-        <Typography variant="h3" component="h1" gutterBottom>
-          Bienvenido a CRM Selumi
+    <Container>
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Bienvenido {user.name}
         </Typography>
-        <Typography variant="h6" color="textSecondary" gutterBottom>
-          Sistema de Gestión de Relaciones con Clientes
-        </Typography>
-        {user && (
-          <Typography variant="body1" color="primary">
-            Sesión iniciada como: {user.name || user.documentNumber}
-          </Typography>
-        )}
-      </Container>
-    </Box>
+        {/* Rest of home page content */}
+      </Box>
+    </Container>
   );
 };
 

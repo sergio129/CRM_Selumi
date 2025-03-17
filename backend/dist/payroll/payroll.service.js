@@ -25,47 +25,41 @@ let PayrollService = class PayrollService {
         this.employeeRepository = employeeRepository;
         this.payrollCalculator = payrollCalculator;
     }
-    async generatePayroll(employeeId, period) {
-        var _a;
-        const employee = await this.employeeRepository.findOneBy({ id: employeeId });
-        if (!employee) {
-            throw new common_1.NotFoundException('Empleado no encontrado');
+    async generatePayroll(generatePayrollDto) {
+        try {
+            const employee = await this.employeeRepository.findOne({
+                where: { id: generatePayrollDto.employeeId }
+            });
+            if (!employee) {
+                throw new Error('Empleado no encontrado');
+            }
+            const payrollData = {
+                employee,
+                employeeId: employee.id,
+                paymentPeriodStart: new Date(generatePayrollDto.periodStart),
+                paymentPeriodEnd: new Date(generatePayrollDto.periodEnd),
+                baseSalary: employee.baseSalary,
+                status: 'pendiente',
+                benefits: {},
+                deductions: {},
+                grossSalary: 0,
+                netSalary: 0
+            };
+            const newPayroll = this.payrollRepository.create(payrollData);
+            return await this.payrollRepository.save(newPayroll);
         }
-        const grossSalary = this.payrollCalculator.calculateGrossSalary(employee, {});
-        const deductions = {
-            tax: this.payrollCalculator.calculateTax(grossSalary),
-            pension: this.payrollCalculator.calculatePension(employee.baseSalary),
-            socialSecurity: this.payrollCalculator.calculateSocialSecurity(employee.baseSalary),
-            loans: ((_a = employee.deductions) === null || _a === void 0 ? void 0 : _a.loans) || 0,
-            otherDeductions: 0
-        };
-        const netSalary = this.payrollCalculator.calculateNetSalary(grossSalary, deductions);
-        const payroll = this.payrollRepository.create({
-            employee,
-            employeeId,
-            paymentPeriodStart: period.start,
-            paymentPeriodEnd: period.end,
-            baseSalary: employee.baseSalary,
-            benefits: Object.assign(Object.assign({}, employee.benefits), { overtimePay: this.payrollCalculator.calculateOvertimePay(employee), otherBenefits: 0 }),
-            deductions,
-            grossSalary,
-            netSalary,
-            status: 'pending'
-        });
-        return this.payrollRepository.save(payroll);
+        catch (error) {
+            throw new Error(`Error al generar nómina: ${error.message}`);
+        }
     }
     async findAll() {
         try {
-            const employees = await this.employeeRepository.find({
-                order: {
-                    fullName: 'ASC'
-                }
+            return await this.payrollRepository.find({
+                relations: ['employee']
             });
-            return employees;
         }
         catch (error) {
-            console.error('Error in findAll:', error);
-            throw error;
+            throw new Error('Error al obtener nóminas');
         }
     }
     async findOne(id) {
@@ -94,6 +88,54 @@ let PayrollService = class PayrollService {
     }
     async update(id, employee) {
         await this.employeeRepository.update(id, employee);
+    }
+    async findAllPayrolls() {
+        try {
+            console.log('Buscando todas las nóminas...');
+            const payrolls = await this.payrollRepository.find({
+                relations: ['employee'],
+                order: {
+                    createdAt: 'DESC'
+                }
+            });
+            const formattedPayrolls = payrolls.map(payroll => (Object.assign(Object.assign({}, payroll), { baseSalary: Number(payroll.baseSalary), grossSalary: Number(payroll.grossSalary), netSalary: Number(payroll.netSalary), benefits: typeof payroll.benefits === 'string' ?
+                    JSON.parse(payroll.benefits) : payroll.benefits, deductions: typeof payroll.deductions === 'string' ?
+                    JSON.parse(payroll.deductions) : payroll.deductions })));
+            console.log(`Encontradas ${formattedPayrolls.length} nóminas`);
+            return formattedPayrolls;
+        }
+        catch (error) {
+            console.error('Error en findAllPayrolls:', error);
+            throw error;
+        }
+    }
+    async updateStatus(id, status) {
+        try {
+            const payroll = await this.payrollRepository.findOne({
+                where: { id }
+            });
+            if (!payroll) {
+                throw new Error('Nómina no encontrada');
+            }
+            payroll.status = status;
+            return await this.payrollRepository.save(payroll);
+        }
+        catch (error) {
+            throw new Error(`Error al actualizar estado: ${error.message}`);
+        }
+    }
+    async findAllEmployees() {
+        try {
+            return await this.employeeRepository.find({
+                order: {
+                    fullName: 'ASC'
+                }
+            });
+        }
+        catch (error) {
+            console.error('Error en findAllEmployees:', error);
+            throw error;
+        }
     }
 };
 exports.PayrollService = PayrollService;

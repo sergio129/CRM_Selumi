@@ -15,6 +15,7 @@ const auth_controller_1 = require("./auth.controller");
 const users_module_1 = require("../users/users.module");
 const jwt_strategy_1 = require("./jwt.strategy");
 const mfa_service_1 = require("./mfa.service");
+const jwt_auth_guard_1 = require("./jwt-auth.guard");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -24,13 +25,18 @@ exports.AuthModule = AuthModule = __decorate([
             users_module_1.UsersModule,
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
-                secret: process.env.JWT_SECRET || 'secretKey',
-                signOptions: { expiresIn: '60m' },
+                secret: 'tu-secreto-seguro',
+                signOptions: { expiresIn: '24h' },
             }),
         ],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, mfa_service_1.MfaService],
+        providers: [
+            auth_service_1.AuthService,
+            jwt_strategy_1.JwtStrategy,
+            mfa_service_1.MfaService,
+            jwt_auth_guard_1.JwtAuthGuard
+        ],
         controllers: [auth_controller_1.AuthController],
-        exports: [auth_service_1.AuthService, mfa_service_1.MfaService],
+        exports: [auth_service_1.AuthService, mfa_service_1.MfaService, jwt_auth_guard_1.JwtAuthGuard],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

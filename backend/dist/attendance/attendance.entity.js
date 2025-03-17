@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Attendance = void 0;
 const typeorm_1 = require("typeorm");
+const employee_entity_1 = require("../payroll/employee.entity");
 let Attendance = class Attendance {
 };
 exports.Attendance = Attendance;
@@ -19,21 +20,33 @@ __decorate([
     __metadata("design:type", Number)
 ], Attendance.prototype, "id", void 0);
 __decorate([
+    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee),
+    __metadata("design:type", employee_entity_1.Employee)
+], Attendance.prototype, "employee", void 0);
+__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Attendance.prototype, "employeeId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], Attendance.prototype, "checkInTime", void 0);
+], Attendance.prototype, "checkIn", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Date)
-], Attendance.prototype, "checkOutTime", void 0);
+], Attendance.prototype, "checkOut", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['onTime', 'late', 'earlyLeave', 'absent'],
+        default: 'onTime'
+    }),
     __metadata("design:type", String)
 ], Attendance.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], Attendance.prototype, "biometricData", void 0);
 exports.Attendance = Attendance = __decorate([
     (0, typeorm_1.Entity)()
 ], Attendance);

@@ -23,44 +23,55 @@ let PayrollController = class PayrollController {
         this.payrollService = payrollService;
     }
     async generatePayroll(generatePayrollDto) {
-        return this.payrollService.generatePayroll(generatePayrollDto.employeeId, {
-            start: new Date(generatePayrollDto.periodStart),
-            end: new Date(generatePayrollDto.periodEnd)
-        });
-    }
-    async findAll() {
         try {
-            const employees = await this.payrollService.findAll();
+            console.log('Recibiendo datos para generar nómina:', generatePayrollDto);
+            const result = await this.payrollService.generatePayroll(generatePayrollDto);
             return {
                 success: true,
-                data: employees,
-                message: 'Empleados recuperados exitosamente'
+                data: result,
+                message: 'Nómina generada exitosamente'
             };
         }
         catch (error) {
+            console.error('Error al generar nómina:', error);
             throw new common_1.HttpException({
                 success: false,
-                message: 'Error al recuperar empleados',
-                error: error.message
+                message: error.message || 'Error al generar nómina',
             }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async findAll() {
+        try {
+            const payrolls = await this.payrollService.findAll();
+            return {
+                success: true,
+                data: payrolls
+            };
+        }
+        catch (error) {
+            console.error('Error en findAll:', error);
+            return {
+                success: false,
+                message: 'Error al obtener nóminas',
+                error: error.message
+            };
         }
     }
     async findAllEmployees() {
         try {
-            const employees = await this.payrollService.findAll();
+            const employees = await this.payrollService.findAllEmployees();
             return {
                 success: true,
-                data: employees || [],
-                message: 'Empleados recuperados exitosamente'
+                data: employees
             };
         }
         catch (error) {
-            console.error('Error in findAllEmployees:', error);
-            throw new common_1.HttpException({
+            console.error('Error en findAllEmployees:', error);
+            return {
                 success: false,
-                message: 'Error al recuperar empleados',
+                message: 'Error al obtener empleados',
                 error: error.message
-            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            };
         }
     }
     async findOne(id) {
@@ -87,6 +98,23 @@ let PayrollController = class PayrollController {
     }
     async update(id, employee) {
         return this.payrollService.update(+id, employee);
+    }
+    async updateStatus(id, status) {
+        try {
+            const result = await this.payrollService.updateStatus(parseInt(id), status);
+            return {
+                success: true,
+                data: result
+            };
+        }
+        catch (error) {
+            console.error('Error en updateStatus:', error);
+            return {
+                success: false,
+                message: 'Error al actualizar estado',
+                error: error.message
+            };
+        }
     }
 };
 exports.PayrollController = PayrollController;
@@ -138,6 +166,14 @@ __decorate([
     __metadata("design:paramtypes", [String, employee_entity_1.Employee]),
     __metadata("design:returntype", Promise)
 ], PayrollController.prototype, "update", null);
+__decorate([
+    (0, common_1.Patch)(':id/status'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('status')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], PayrollController.prototype, "updateStatus", null);
 exports.PayrollController = PayrollController = __decorate([
     (0, common_1.Controller)('payroll'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

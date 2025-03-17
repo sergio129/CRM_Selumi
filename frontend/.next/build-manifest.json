@@ -27,10 +27,20 @@
       "static/chunks/main.js",
       "static/chunks/pages/employees.js"
     ],
-    "/employees/edit/[id]": [
+    "/home": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/employees/edit/[id].js"
+      "static/chunks/pages/home.js"
+    ],
+    "/login": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/login.js"
+    ],
+    "/payroll": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/payroll.js"
     ]
   },
   "ampFirstPages": []

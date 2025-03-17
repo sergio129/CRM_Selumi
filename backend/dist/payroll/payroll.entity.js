@@ -20,7 +20,8 @@ __decorate([
     __metadata("design:type", Number)
 ], Payroll.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee),
+    (0, typeorm_1.ManyToOne)(() => employee_entity_1.Employee, { eager: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'employeeId' }),
     __metadata("design:type", employee_entity_1.Employee)
 ], Payroll.prototype, "employee", void 0);
 __decorate([
@@ -60,7 +61,11 @@ __decorate([
     __metadata("design:type", String)
 ], Payroll.prototype, "notes", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 'pending' }),
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['pendiente', 'aprobado', 'pagado', 'cancelado'],
+        default: 'pendiente'
+    }),
     __metadata("design:type", String)
 ], Payroll.prototype, "status", void 0);
 __decorate([
@@ -71,6 +76,46 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Date)
 ], Payroll.prototype, "paidAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], Payroll.prototype, "attendanceDetails", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], Payroll.prototype, "overtimeDetails", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], Payroll.prototype, "incentives", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], Payroll.prototype, "taxDetails", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Payroll.prototype, "approvedBy", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Date)
+], Payroll.prototype, "approvedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Payroll.prototype, "isPaid", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Payroll.prototype, "paymentReference", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Payroll.prototype, "paymentMethod", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'json', nullable: true }),
+    __metadata("design:type", Array)
+], Payroll.prototype, "adjustments", void 0);
 exports.Payroll = Payroll = __decorate([
     (0, typeorm_1.Entity)()
 ], Payroll);

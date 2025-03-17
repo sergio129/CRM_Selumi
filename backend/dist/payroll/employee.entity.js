@@ -115,6 +115,10 @@ __decorate([
     __metadata("design:type", Date)
 ], Employee.prototype, "lastPaymentDate", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Employee.prototype, "isIncomeTaxPayer", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Employee.prototype, "createdAt", void 0);

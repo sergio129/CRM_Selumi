@@ -34,6 +34,7 @@ export declare class Employee {
     bankAccountNumber: string;
     bankAccountType: string;
     lastPaymentDate: Date;
+    isIncomeTaxPayer: boolean;
     createdAt: Date;
     updatedAt: Date;
 }

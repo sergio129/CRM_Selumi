@@ -24,7 +24,44 @@ export declare class Payroll {
     grossSalary: number;
     netSalary: number;
     notes: string;
-    status: string;
+    status: 'pendiente' | 'aprobado' | 'pagado' | 'cancelado';
     createdAt: Date;
     paidAt: Date;
+    attendanceDetails: {
+        daysWorked: number;
+        absences: number;
+        holidays: number;
+        vacationDays: number;
+        sickDays: number;
+    };
+    overtimeDetails: {
+        regularOvertimeHours: number;
+        holidayOvertimeHours: number;
+        nightOvertimeHours: number;
+        totalOvertimeAmount: number;
+    };
+    incentives: {
+        performance: number;
+        attendance: number;
+        leadership: number;
+        other: number;
+    };
+    taxDetails: {
+        taxableIncome: number;
+        taxRate: number;
+        taxExemptions: number;
+        finalTax: number;
+    };
+    approvedBy: string;
+    approvedAt: Date;
+    isPaid: boolean;
+    paymentReference: string;
+    paymentMethod: string;
+    adjustments: {
+        description: string;
+        amount: number;
+        type: 'addition' | 'deduction';
+        date: Date;
+        approvedBy: string;
+    }[];
 }

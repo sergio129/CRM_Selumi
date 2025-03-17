@@ -19,10 +19,15 @@ let PayrollModule = class PayrollModule {
 exports.PayrollModule = PayrollModule;
 exports.PayrollModule = PayrollModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([employee_entity_1.Employee, payroll_entity_1.Payroll])],
-        providers: [payroll_service_1.PayrollService, payroll_calculator_service_1.PayrollCalculatorService],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([employee_entity_1.Employee, payroll_entity_1.Payroll])
+        ],
+        providers: [
+            payroll_service_1.PayrollService,
+            payroll_calculator_service_1.PayrollCalculatorService
+        ],
         controllers: [payroll_controller_1.PayrollController],
-        exports: [payroll_service_1.PayrollService],
+        exports: [payroll_service_1.PayrollService]
     })
 ], PayrollModule);
 //# sourceMappingURL=payroll.module.js.map

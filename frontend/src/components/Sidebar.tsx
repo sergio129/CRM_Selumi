@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-} from '@mui/material';
+  } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import HomeIcon from '@mui/icons-material/Home';
@@ -72,10 +72,18 @@ const Sidebar = () => {
     }
   };
 
+  const handleNavigation = (path: string) => {
+    event?.preventDefault();
+    if (path === '/employees') {
+      console.log('Navegando a empleados...');
+    }
+    router.push(path);
+  };
+
   const menuItems = [
-    { text: 'Inicio', icon: <HomeIcon />, path: '/' },
+    { text: 'Inicio', icon: <HomeIcon />, path: '/home' },
+    { text: 'Empleados', icon: <WorkIcon />, path: '/employees' },
     { text: 'Usuarios', icon: <PeopleIcon />, path: '/users' },
-    { text: 'Empleados', icon: <WorkIcon />, path: '/employees' }, // Agregado nuevo ítem
     { text: 'Clientes', icon: <PeopleIcon />, path: '/clients' },
     { text: 'Contabilidad', icon: <AccountBalanceIcon />, path: '/accounting' },
     { text: 'Préstamos', icon: <AttachMoneyIcon />, path: '/loans' },
@@ -127,12 +135,20 @@ const Sidebar = () => {
           </Typography>
         </DrawerHeader>
         <List>
-          {menuItems.map((item, index) => (
-            <ListItem 
-              button 
-              key={index} 
-              onClick={() => router.push(item.path)}
+          {menuItems.map((item) => (
+            <ListItem
+              key={item.text}
+              button
+              onClick={() => handleNavigation(item.path)}
               selected={router.pathname === item.path}
+              sx={{
+                '&.Mui-selected': {
+                  backgroundColor: 'primary.light',
+                  '&:hover': {
+                    backgroundColor: 'primary.main',
+                  },
+                },
+              }}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />

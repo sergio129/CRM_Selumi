@@ -1,19 +1,30 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Employee } from '../payroll/employee.entity';
 
 @Entity()
 export class Attendance {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ManyToOne(() => Employee)
+  employee: Employee;
+
   @Column()
   employeeId: number;
 
-  @Column()
-  checkInTime: Date;
+  @CreateDateColumn()
+  checkIn: Date;
 
-  @Column()
-  checkOutTime: Date;
+  @Column({ nullable: true })
+  checkOut: Date;
 
-  @Column()
-  status: string; // present, absent, late, etc.
+  @Column({
+    type: 'enum',
+    enum: ['onTime', 'late', 'earlyLeave', 'absent'],
+    default: 'onTime'
+  })
+  status: string;
+
+  @Column({ type: 'json', nullable: true })
+  biometricData: any;
 }

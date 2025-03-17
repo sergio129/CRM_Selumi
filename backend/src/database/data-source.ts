@@ -18,14 +18,21 @@ const dataSource = new DataSource({
   entities: [User, Client, Transaction, Loan, Employee, Role, Attendance],
   migrations: [join(__dirname, 'migrations', '*.{ts,js}')],
   synchronize: false,
-  logging: true,
+  logging: true, // Habilitar logs para ver las consultas SQL
 });
 
+// Agregar manejo de errores en la conexión
 try {
-  dataSource.initialize();
-  console.log("Data Source has been initialized!");
+  dataSource.initialize().then(() => {
+    console.log("Base de datos conectada exitosamente!");
+    // Verificar si hay usuarios
+    const userRepo = dataSource.getRepository(User);
+    userRepo.find().then(users => {
+      console.log(`Usuarios encontrados: ${users.length}`);
+    });
+  });
 } catch (err) {
-  console.error("Error during Data Source initialization:", err);
+  console.error("Error al conectar con la base de datos:", err);
 }
 
 export default dataSource;

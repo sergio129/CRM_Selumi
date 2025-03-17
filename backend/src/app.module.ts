@@ -14,9 +14,9 @@ import { AttendanceModule } from './attendance/attendance.module';
 
 @Module({
   imports: [
+    AuthModule,  // Asegurarse de que AuthModule esté importado primero
     DatabaseModule,
     UsersModule,
-    AuthModule,
     ClientsModule,
     AccountingModule,
     LoansModule,
@@ -27,5 +27,7 @@ import { AttendanceModule } from './attendance/attendance.module';
     NotificationsModule,
     AttendanceModule,
   ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

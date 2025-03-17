@@ -38,8 +38,35 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  findByEmail(email: string): Promise<User> {
-    return this.usersRepository.findOneBy({ email });
+  async findByEmail(email: string): Promise<User | undefined> {
+    try {
+      console.log('Buscando usuario por email:', email); // Debug log
+      
+      const user = await this.usersRepository.findOne({ 
+        where: { email },
+        select: ['id', 'email', 'password', 'name', 'role'] // Asegurar que seleccionamos password
+      });
+      
+      console.log('Usuario encontrado:', user ? 'Sí' : 'No'); // Debug log
+      return user;
+    } catch (error) {
+      console.error('Error en findByEmail:', error);
+      throw error;
+    }
+  }
+
+  async findById(id: number): Promise<User | undefined> {
+    try {
+      console.log('Buscando usuario por ID:', id);
+      
+      return await this.usersRepository.findOne({ 
+        where: { id },
+        select: ['id', 'email', 'name', 'role'] // No devolver la contraseña
+      });
+    } catch (error) {
+      console.error('Error en findById:', error);
+      throw error;
+    }
   }
 
   async findByDocumentNumber(documentNumber: string): Promise<User> {

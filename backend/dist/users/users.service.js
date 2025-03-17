@@ -59,8 +59,33 @@ let UsersService = class UsersService {
     findOne(id) {
         return this.usersRepository.findOneBy({ id });
     }
-    findByEmail(email) {
-        return this.usersRepository.findOneBy({ email });
+    async findByEmail(email) {
+        try {
+            console.log('Buscando usuario por email:', email);
+            const user = await this.usersRepository.findOne({
+                where: { email },
+                select: ['id', 'email', 'password', 'name', 'role']
+            });
+            console.log('Usuario encontrado:', user ? 'Sí' : 'No');
+            return user;
+        }
+        catch (error) {
+            console.error('Error en findByEmail:', error);
+            throw error;
+        }
+    }
+    async findById(id) {
+        try {
+            console.log('Buscando usuario por ID:', id);
+            return await this.usersRepository.findOne({
+                where: { id },
+                select: ['id', 'email', 'name', 'role']
+            });
+        }
+        catch (error) {
+            console.error('Error en findById:', error);
+            throw error;
+        }
     }
     async findByDocumentNumber(documentNumber) {
         try {

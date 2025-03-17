@@ -17,6 +17,7 @@
     "@types/xlsx": "^0.0.36",
     "bcrypt": "^5.1.1",
     "qrcode": "^1.5.4",
+    "qrcode.react": "^4.2.0",
     "speakeasy": "^2.0.0",
     "xlsx": "^0.18.5"
   }

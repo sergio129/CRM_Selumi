@@ -1,8 +1,8 @@
 export declare class User {
     id: number;
-    name: string;
     email: string;
     password: string;
+    name: string;
     documentNumber: string;
     phoneNumber: string;
     role: string;

@@ -22,11 +22,16 @@ const dataSource = new typeorm_1.DataSource({
     logging: true,
 });
 try {
-    dataSource.initialize();
-    console.log("Data Source has been initialized!");
+    dataSource.initialize().then(() => {
+        console.log("Base de datos conectada exitosamente!");
+        const userRepo = dataSource.getRepository(user_entity_1.User);
+        userRepo.find().then(users => {
+            console.log(`Usuarios encontrados: ${users.length}`);
+        });
+    });
 }
 catch (err) {
-    console.error("Error during Data Source initialization:", err);
+    console.error("Error al conectar con la base de datos:", err);
 }
 exports.default = dataSource;
 //# sourceMappingURL=data-source.js.map
